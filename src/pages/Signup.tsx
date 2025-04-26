@@ -9,7 +9,6 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const { signup } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
