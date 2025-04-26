@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Workout {
   id: number;
@@ -19,7 +19,7 @@ const workouts: Workout[] = [
     category: 'HIIT',
     duration: '30 minutes',
     equipment: ['None'],
-    videoUrl: 'https://www.youtube.com/embed/example1',
+    videoUrl: 'https://www.youtube.com/embed/ml6cT4AZdqI',
     instructions: [
       'Warm up with light cardio for 5 minutes',
       'Perform each exercise for 45 seconds',
@@ -34,7 +34,7 @@ const workouts: Workout[] = [
     category: 'Abs',
     duration: '20 minutes',
     equipment: ['Mat'],
-    videoUrl: 'https://www.youtube.com/embed/example2',
+    videoUrl: 'https://www.youtube.com/embed/VaoV1PrYft4',
     instructions: [
       'Start with a plank hold for 1 minute',
       'Perform each exercise for 30 seconds',
@@ -49,12 +49,57 @@ const workouts: Workout[] = [
     category: 'Strength',
     duration: '45 minutes',
     equipment: ['Dumbbells', 'Bench'],
-    videoUrl: 'https://www.youtube.com/embed/example3',
+    videoUrl: 'https://www.youtube.com/embed/8ZtInClXe1Q',
     instructions: [
       'Warm up shoulders and arms',
       '3 sets of 12 reps per exercise',
       'Rest 60-90 seconds between sets',
       'Focus on proper form'
+    ]
+  },
+  {
+    id: 4,
+    title: 'Yoga Flow',
+    description: 'Complete yoga session for flexibility and relaxation',
+    category: 'Yoga',
+    duration: '45 minutes',
+    equipment: ['Yoga Mat'],
+    videoUrl: 'https://www.youtube.com/embed/UBMk30rjy0o',
+    instructions: [
+      'Start with breathing exercises',
+      'Follow the instructor\'s flow',
+      'Hold each pose for 30-60 seconds',
+      'End with meditation'
+    ]
+  },
+  {
+    id: 5,
+    title: 'Cardio Blast',
+    description: 'High-energy cardio workout to burn calories',
+    category: 'Cardio',
+    duration: '30 minutes',
+    equipment: ['None'],
+    videoUrl: 'https://www.youtube.com/embed/2pLT-olgUJs',
+    instructions: [
+      'Start with a 5-minute warm-up',
+      'Alternate between high and low intensity',
+      'Keep heart rate elevated',
+      'Cool down and stretch'
+    ]
+  },
+  {
+    id: 6,
+    title: 'Full Body Strength',
+    description: 'Complete strength training for all muscle groups',
+    category: 'Full Body',
+    duration: '45 minutes',
+    equipment: ['Dumbbells', 'Resistance Bands'],
+    videoUrl: 'https://www.youtube.com/embed/g_tea8ZNk5A',
+    instructions: [
+      'Warm up with dynamic stretches',
+      'Focus on compound movements',
+      '3 sets of 10-12 reps',
+      'Rest 60 seconds between sets'
     ]
   }
 ];
@@ -63,11 +108,23 @@ const categories = ['All', 'Strength', 'Cardio', 'HIIT', 'Yoga', 'Abs', 'Full Bo
 
 export default function Workouts() {
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
+  const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(workouts[0]); // Set first workout as default
 
   const filteredWorkouts = selectedCategory === 'All'
     ? workouts
     : workouts.filter(workout => workout.category === selectedCategory);
+
+  // Update selected workout when category changes
+  useEffect(() => {
+    if (selectedCategory !== 'All') {
+      const firstWorkoutInCategory = workouts.find(workout => workout.category === selectedCategory);
+      if (firstWorkoutInCategory) {
+        setSelectedWorkout(firstWorkoutInCategory);
+      }
+    } else {
+      setSelectedWorkout(workouts[0]);
+    }
+  }, [selectedCategory]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -79,7 +136,7 @@ export default function Workouts() {
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-full ${
+              className={`px-4 py-2 rounded-full transition-colors duration-200 ${
                 selectedCategory === category
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -99,8 +156,10 @@ export default function Workouts() {
             {filteredWorkouts.map(workout => (
               <div
                 key={workout.id}
-                className={`card cursor-pointer ${
-                  selectedWorkout?.id === workout.id ? 'ring-2 ring-blue-600' : ''
+                className={`card cursor-pointer transition-all duration-200 hover:shadow-lg ${
+                  selectedWorkout?.id === workout.id 
+                    ? 'ring-2 ring-blue-600 bg-blue-50' 
+                    : 'hover:bg-gray-50'
                 }`}
                 onClick={() => setSelectedWorkout(workout)}
               >
@@ -122,7 +181,7 @@ export default function Workouts() {
         </div>
 
         {/* Workout Details */}
-        {selectedWorkout ? (
+        {selectedWorkout && (
           <div className="card">
             <h2 className="text-2xl font-bold mb-4">{selectedWorkout.title}</h2>
             <div className="aspect-w-16 aspect-h-9 mb-4">
@@ -156,10 +215,6 @@ export default function Workouts() {
                 ))}
               </ol>
             </div>
-          </div>
-        ) : (
-          <div className="card flex items-center justify-center text-gray-500">
-            Select a workout to view details
           </div>
         )}
       </div>
